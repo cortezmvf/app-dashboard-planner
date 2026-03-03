@@ -4,10 +4,10 @@ interface Props { chart: ChartItem; colors: string[] }
 
 const BAR_DATA = [0.6, 0.75, 0.5, 0.88, 0.65, 0.72]
 const LINE_DATA = [0.45, 0.6, 0.55, 0.7, 0.62, 0.8]
-const LABELS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun']
+const LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
 
 export function ComboChartPlaceholder({ chart, colors }: Props) {
-  const pad = { t: 36, r: 12, b: 32, l: 36 }
+  const pad = { t: chart.subtitle ? 38 : 24, r: 12, b: 32, l: 36 }
   const W = chart.width, H = chart.height
   const cW = W - pad.l - pad.r
   const cH = H - pad.t - pad.b
@@ -23,6 +23,7 @@ export function ComboChartPlaceholder({ chart, colors }: Props) {
     <svg width={W} height={H} style={{ display: 'block', fontFamily: 'system-ui, sans-serif' }}>
       <rect width={W} height={H} fill="white" />
       {chart.title && <text x={pad.l} y={16} fontSize={11} fontWeight="600" fill="#374151">{chart.title}</text>}
+      {chart.subtitle && <text x={pad.l} y={28} fontSize={9} fill="#6b7280">{chart.subtitle}</text>}
 
       {[0, 0.25, 0.5, 0.75, 1].map((pct, i) => {
         const y = pad.t + cH - pct * cH

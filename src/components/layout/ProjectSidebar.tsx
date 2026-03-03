@@ -47,9 +47,9 @@ export function ProjectSidebar({ onNewProject }: { onNewProject: () => void }) {
   function commitRename() {
     if (!renamingId) return
     const trimmed = renameValue.trim()
-    if (!trimmed) { setRenameError('Nome obrigatório'); return }
+    if (!trimmed) { setRenameError('Name required'); return }
     const conflict = store.projects.some(p => p.id !== renamingId && p.name.toLowerCase() === trimmed.toLowerCase())
-    if (conflict) { setRenameError('Nome já existe'); return }
+    if (conflict) { setRenameError('Name already exists'); return }
     store.renameProject(renamingId, trimmed)
     setRenamingId(null)
   }
@@ -63,7 +63,7 @@ export function ProjectSidebar({ onNewProject }: { onNewProject: () => void }) {
           onClick={onNewProject}
           className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-[#005175] hover:bg-[#003d58] text-white text-sm font-medium rounded-lg transition-colors"
         >
-          + Novo Projeto
+          + New Project
         </button>
       </div>
 
@@ -128,24 +128,24 @@ export function ProjectSidebar({ onNewProject }: { onNewProject: () => void }) {
             onClick={() => startRename(contextMenu.projectId)}
             className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
           >
-            <Pencil size={14} /> Renomear
+            <Pencil size={14} /> Rename
           </button>
           <button
             onClick={() => { store.duplicateProject(contextMenu.projectId); setContextMenu(null) }}
             className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
           >
-            <Copy size={14} /> Duplicar
+            <Copy size={14} /> Duplicate
           </button>
           <div className="border-t border-gray-100 dark:border-gray-700 my-1" />
           <button
             onClick={() => {
-              if (store.projects.length <= 1) { alert('Não é possível excluir o único projeto.'); return }
-              if (confirm('Excluir este projeto?')) store.deleteProject(contextMenu.projectId)
+              if (store.projects.length <= 1) { alert('Cannot delete the only project.'); return }
+              if (confirm('Delete this project?')) store.deleteProject(contextMenu.projectId)
               setContextMenu(null)
             }}
             className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
           >
-            <Trash2 size={14} /> Excluir
+            <Trash2 size={14} /> Delete
           </button>
         </div>
       )}

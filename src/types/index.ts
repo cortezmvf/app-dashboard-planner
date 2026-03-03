@@ -11,7 +11,6 @@ export type ChartType =
   | 'gauge'
   | 'bullet'
   | 'table'
-  | 'pivot'
   | 'text-box'
   | 'image-placeholder'
   | 'divider'
@@ -34,10 +33,10 @@ export interface ChartItem {
   subtitle: string
   xAxisLabel: string
   yAxisLabel: string
-  legendLabel: string
+  showLegend: boolean
   valueLabel: string
   unit: string
-  // Table/Pivot
+  // Table
   columns: string
   // Text Box
   content: string
@@ -49,6 +48,12 @@ export interface ChartItem {
   textBackground: 'transparent' | 'white' | 'light-gray' | 'schema-1' | 'schema-2' | 'schema-3'
   // Image placeholder
   altText: string
+  // Border
+  borderColor: string
+  borderWidth: number
+  borderStyle: 'solid' | 'dashed' | 'dotted'
+  // Chart orientation
+  orientation: 'vertical' | 'horizontal'
 }
 
 export interface Tab {

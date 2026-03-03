@@ -49,7 +49,7 @@ export function Canvas() {
   if (!project || !tab) {
     return (
       <div className="flex-1 flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-400">
-        Nenhum projeto aberto
+        No project open
       </div>
     )
   }

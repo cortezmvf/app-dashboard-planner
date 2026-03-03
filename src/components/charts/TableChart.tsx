@@ -3,27 +3,26 @@ import type { ChartItem } from '../../types'
 interface Props { chart: ChartItem; colors: string[] }
 
 const ROWS = [
-  ['Produto A', '1.234', '45%', '↑ 12%'],
-  ['Produto B', '987',   '32%', '↓ 3%'],
-  ['Produto C', '765',   '28%', '↑ 8%'],
-  ['Produto D', '543',   '19%', '↑ 2%'],
-  ['Produto E', '321',   '11%', '↓ 1%'],
+  ['Product A', '1,234', '45%', '↑ 12%'],
+  ['Product B', '987',   '32%', '↓ 3%'],
+  ['Product C', '765',   '28%', '↑ 8%'],
+  ['Product D', '543',   '19%', '↑ 2%'],
+  ['Product E', '321',   '11%', '↓ 1%'],
 ]
 
 export function TableChartPlaceholder({ chart, colors }: Props) {
   const W = chart.width, H = chart.height
-  const titleH = chart.title ? 24 : 4
+  const titleH = chart.title ? (chart.subtitle ? 36 : 24) : 4
   const cols = chart.columns.split(',').map(s => s.trim()).filter(Boolean)
-  const headers = cols.length > 0 ? cols.slice(0, 4) : ['Categoria', 'Valor', 'Share', 'Δ']
+  const headers = cols.length > 0 ? cols.slice(0, 4) : ['Category', 'Value', 'Share', 'Δ']
   const rowH = Math.max(18, (H - titleH - 28) / Math.min(ROWS.length + 1, 6))
   const colW = (W - 2) / headers.length
-
-  const isPivot = chart.type === 'pivot'
 
   return (
     <svg width={W} height={H} style={{ display: 'block', fontFamily: 'system-ui, sans-serif' }}>
       <rect width={W} height={H} fill="white" />
       {chart.title && <text x={W / 2} y={16} fontSize={11} fontWeight="600" fill="#374151" textAnchor="middle">{chart.title}</text>}
+      {chart.subtitle && <text x={W / 2} y={28} fontSize={9} fill="#6b7280" textAnchor="middle">{chart.subtitle}</text>}
 
       {/* Header row */}
       <rect x={1} y={titleH} width={W - 2} height={rowH} fill={colors[0]} rx={2} />
@@ -40,7 +39,7 @@ export function TableChartPlaceholder({ chart, colors }: Props) {
           {headers.map((_h, ci) => (
             <text key={ci} x={1 + colW * ci + (ci === 0 ? 6 : colW / 2)} y={titleH + rowH * (ri + 1) + rowH * 0.65}
               fontSize={8} fill={ci === headers.length - 1 ? (row[ci]?.startsWith('↑') ? '#16a34a' : '#dc2626') : '#374151'}
-              textAnchor={ci === 0 ? 'start' : 'middle'} fontWeight={isPivot && ci === 0 ? '600' : 'normal'}>
+              textAnchor={ci === 0 ? 'start' : 'middle'}>
               {row[ci] ?? '—'}
             </text>
           ))}

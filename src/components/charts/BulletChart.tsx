@@ -13,6 +13,7 @@ export function BulletChartPlaceholder({ chart, colors }: Props) {
     <svg width={W} height={H} style={{ display: 'block', fontFamily: 'system-ui, sans-serif' }}>
       <rect width={W} height={H} fill="white" />
       {chart.title && <text x={pad.l} y={16} fontSize={11} fontWeight="600" fill="#374151">{chart.title}</text>}
+      {chart.subtitle && <text x={pad.l} y={28} fontSize={9} fill="#6b7280">{chart.subtitle}</text>}
 
       {/* Qualitative ranges */}
       <rect x={pad.l} y={trackY} width={cW} height={trackH} fill="#e5e7eb" rx={2} />

@@ -42,9 +42,9 @@ export function TabBar({ onNewTab }: { onNewTab: () => void }) {
   function commitRename() {
     if (!renamingId || !project) return
     const trimmed = renameValue.trim()
-    if (!trimmed) { setRenameError('Nome obrigatório'); return }
+    if (!trimmed) { setRenameError('Name required'); return }
     const conflict = project.tabs.some(t => t.id !== renamingId && t.name.toLowerCase() === trimmed.toLowerCase())
-    if (conflict) { setRenameError('Nome já existe'); return }
+    if (conflict) { setRenameError('Name already exists'); return }
     store.renameTab(renamingId, trimmed)
     setRenamingId(null)
   }
@@ -123,24 +123,24 @@ export function TabBar({ onNewTab }: { onNewTab: () => void }) {
             onClick={() => startRename(tabMenu.tabId)}
             className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
           >
-            <Pencil size={14} /> Renomear
+            <Pencil size={14} /> Rename
           </button>
           <button
             onClick={() => { store.duplicateTab(tabMenu.tabId); setTabMenu(null) }}
             className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
           >
-            <Copy size={14} /> Duplicar
+            <Copy size={14} /> Duplicate
           </button>
           <div className="border-t border-gray-100 dark:border-gray-700 my-1" />
           <button
             onClick={() => {
-              if (project!.tabs.length <= 1) { alert('Não é possível excluir o único dashboard.'); return }
-              if (confirm('Excluir este dashboard?')) store.deleteTab(tabMenu.tabId)
+              if (project!.tabs.length <= 1) { alert('Cannot delete the only dashboard.'); return }
+              if (confirm('Delete this dashboard?')) store.deleteTab(tabMenu.tabId)
               setTabMenu(null)
             }}
             className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
           >
-            <Trash2 size={14} /> Excluir
+            <Trash2 size={14} /> Delete
           </button>
         </div>
       )}

@@ -10,11 +10,13 @@ export function StatusBar() {
 
   function fitToScreen() {
     if (!tab) return
-    const viewportW = window.innerWidth - 280
-    const viewportH = window.innerHeight - 130
+    // Account for sidebar, right panel, top bar, tab bar, status bar
+    const sidebarW = store.isSidebarCollapsed ? 48 : 192
+    const viewportW = window.innerWidth - sidebarW - 224 - 32
+    const viewportH = window.innerHeight - 110
     const scaleW = viewportW / tab.canvasWidth
     const scaleH = viewportH / tab.canvasHeight
-    store.setZoom(Math.min(scaleW, scaleH, 1))
+    store.setZoom(Math.min(scaleW, scaleH))
   }
 
   return (
@@ -28,7 +30,7 @@ export function StatusBar() {
         <button
           onClick={() => store.setZoom(1)}
           className="w-12 text-center hover:text-gray-700 dark:hover:text-gray-200 transition-colors font-medium"
-          title="Clique para 100%"
+          title="Click for 100%"
         >
           {zoomPct}%
         </button>
@@ -39,9 +41,9 @@ export function StatusBar() {
         <button
           onClick={fitToScreen}
           className="px-1.5 py-0.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-          title="Ajustar à tela"
+          title="Fit to screen"
         >
-          Ajustar
+          Fit
         </button>
       </div>
 
@@ -65,17 +67,17 @@ export function StatusBar() {
       <button
         onClick={() => store.setShowGrid(!store.showGrid)}
         className="flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
-        title="Mostrar/ocultar grade"
+        title="Show/hide grid"
       >
         {store.showGrid ? <Eye size={12} /> : <EyeOff size={12} />}
-        <span>Grade</span>
+        <span>Grid</span>
       </button>
 
       {/* Snap toggle */}
       <button
         onClick={() => store.setSnapEnabled(!store.snapEnabled)}
         className={`flex items-center gap-1 transition-colors ${store.snapEnabled ? 'text-[#005175] dark:text-blue-400 font-medium' : 'hover:text-gray-700 dark:hover:text-gray-200'}`}
-        title="Snap à grade"
+        title="Snap to grid"
       >
         <span>Snap {store.snapEnabled ? 'On' : 'Off'}</span>
       </button>
@@ -85,7 +87,7 @@ export function StatusBar() {
       {/* Canvas info */}
       {tab && (
         <span className="text-gray-400 dark:text-gray-500">
-          {tab.canvasWidth} × {tab.canvasHeight}px &nbsp;·&nbsp; {chartCount} {chartCount === 1 ? 'elemento' : 'elementos'}
+          {tab.canvasWidth} × {tab.canvasHeight}px &nbsp;·&nbsp; {chartCount} {chartCount === 1 ? 'element' : 'elements'}
         </span>
       )}
     </footer>

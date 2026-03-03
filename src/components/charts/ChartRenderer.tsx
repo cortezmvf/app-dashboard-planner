@@ -44,7 +44,6 @@ export function ChartRenderer({ chart, colors }: Props) {
     case 'bullet':
       return <BulletChartPlaceholder {...props} />
     case 'table':
-    case 'pivot':
       return <TableChartPlaceholder {...props} />
     case 'text-box':
       return <TextBoxPlaceholder {...props} />

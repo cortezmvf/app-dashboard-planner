@@ -4,7 +4,7 @@ export function generateId(): string {
 
 export function formatDate(iso: string): string {
   const d = new Date(iso)
-  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
+  return d.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
 export function formatRelativeDate(iso: string): string {
@@ -12,10 +12,10 @@ export function formatRelativeDate(iso: string): string {
   const minutes = Math.floor(diff / 60000)
   const hours = Math.floor(diff / 3600000)
   const days = Math.floor(diff / 86400000)
-  if (minutes < 1) return 'agora'
-  if (minutes < 60) return `${minutes}min atrás`
-  if (hours < 24) return `${hours}h atrás`
-  if (days < 7) return `${days}d atrás`
+  if (minutes < 1) return 'just now'
+  if (minutes < 60) return `${minutes}min ago`
+  if (hours < 24) return `${hours}h ago`
+  if (days < 7) return `${days}d ago`
   return formatDate(iso)
 }
 

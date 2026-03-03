@@ -6,7 +6,7 @@ const BASE: Omit<ChartItem, 'id' | 'type' | 'x' | 'y' | 'width' | 'height' | 'zI
   subtitle: '',
   xAxisLabel: '',
   yAxisLabel: '',
-  legendLabel: '',
+  showLegend: false,
   valueLabel: '',
   unit: '',
   columns: 'Column A, Column B, Column C',
@@ -18,6 +18,10 @@ const BASE: Omit<ChartItem, 'id' | 'type' | 'x' | 'y' | 'width' | 'height' | 'zI
   textColor: '#1a1a1a',
   textBackground: 'transparent',
   altText: 'Image',
+  borderColor: '#e5e7eb',
+  borderWidth: 0,
+  borderStyle: 'solid',
+  orientation: 'vertical',
 }
 
 const SIZES: Record<ChartType, { width: number; height: number }> = {
@@ -33,7 +37,6 @@ const SIZES: Record<ChartType, { width: number; height: number }> = {
   'gauge':             { width: 240, height: 200 },
   'bullet':            { width: 320, height: 100 },
   'table':             { width: 400, height: 280 },
-  'pivot':             { width: 400, height: 280 },
   'text-box':          { width: 300, height: 60 },
   'image-placeholder': { width: 300, height: 200 },
   'divider':           { width: 400, height: 20 },
@@ -68,7 +71,6 @@ export function getDefaultTitle(type: ChartType): string {
     'gauge':             'Gauge',
     'bullet':            'Bullet Chart',
     'table':             'Table',
-    'pivot':             'Pivot Table',
     'text-box':          'Title',
     'image-placeholder': 'Image',
     'divider':           '',

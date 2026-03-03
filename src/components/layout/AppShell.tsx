@@ -77,7 +77,7 @@ export function AppShell() {
                   : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
               }`}
             >
-              Elementos
+              Elements
             </button>
             <button
               onClick={() => setRightTab('properties')}
@@ -87,7 +87,7 @@ export function AppShell() {
                   : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
               }`}
             >
-              Propriedades
+              Properties
               {selectedCount > 0 && (
                 <span className="ml-1 bg-[#005175] text-white rounded-full w-4 h-4 inline-flex items-center justify-center text-[9px]">
                   {selectedCount}

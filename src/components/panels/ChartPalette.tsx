@@ -1,3 +1,4 @@
+import { useAppStore } from '../../store/useAppStore'
 import type { ChartType } from '../../types'
 
 interface PaletteItem {
@@ -8,60 +9,69 @@ interface PaletteItem {
 
 const PALETTE: { category: string; items: PaletteItem[] }[] = [
   {
-    category: 'Texto e Anotação',
+    category: 'Text & Annotation',
     items: [
-      { type: 'text-box', label: 'Caixa de Texto', icon: 'T' },
-      { type: 'divider', label: 'Divisor', icon: '—' },
+      { type: 'text-box', label: 'Text Box', icon: 'T' },
+      { type: 'divider', label: 'Divider', icon: '—' },
     ],
   },
   {
-    category: 'Gráficos',
+    category: 'Charts',
     items: [
-      { type: 'bar', label: 'Barras', icon: '▊' },
-      { type: 'stacked-bar', label: 'Barras Empilhadas', icon: '▤' },
-      { type: 'line', label: 'Linhas', icon: '〜' },
-      { type: 'area', label: 'Área', icon: '◭' },
-      { type: 'combo', label: 'Combo', icon: '⊞' },
-      { type: 'scatter', label: 'Dispersão', icon: '⁙' },
-      { type: 'pie', label: 'Pizza', icon: '◔' },
-      { type: 'donut', label: 'Rosca', icon: '◎' },
+      { type: 'bar', label: 'Bar Chart', icon: '▊' },
+      { type: 'stacked-bar', label: 'Stacked Bar', icon: '▤' },
+      { type: 'line', label: 'Line Chart', icon: '〜' },
+      { type: 'area', label: 'Area Chart', icon: '◭' },
+      { type: 'combo', label: 'Combo Chart', icon: '⊞' },
+      { type: 'scatter', label: 'Scatter Plot', icon: '⁙' },
+      { type: 'pie', label: 'Pie Chart', icon: '◔' },
+      { type: 'donut', label: 'Donut Chart', icon: '◎' },
     ],
   },
   {
-    category: 'Indicadores',
+    category: 'Indicators',
     items: [
-      { type: 'kpi-card', label: 'Card KPI', icon: '#' },
+      { type: 'kpi-card', label: 'KPI Card', icon: '#' },
       { type: 'gauge', label: 'Gauge', icon: '◑' },
-      { type: 'bullet', label: 'Bullet', icon: '▷' },
+      { type: 'bullet', label: 'Bullet Chart', icon: '▷' },
     ],
   },
   {
-    category: 'Dados',
+    category: 'Data',
     items: [
-      { type: 'table', label: 'Tabela', icon: '⊟' },
-      { type: 'pivot', label: 'Tabela Pivot', icon: '⊞' },
+      { type: 'table', label: 'Table', icon: '⊟' },
     ],
   },
   {
     category: 'Layout',
     items: [
-      { type: 'image-placeholder', label: 'Imagem', icon: '🖼' },
-      { type: 'shape-rect', label: 'Retângulo', icon: '▭' },
-      { type: 'shape-ellipse', label: 'Elipse', icon: '⬭' },
+      { type: 'image-placeholder', label: 'Image', icon: '🖼' },
+      { type: 'shape-rect', label: 'Rectangle', icon: '▭' },
+      { type: 'shape-ellipse', label: 'Ellipse', icon: '⬭' },
     ],
   },
 ]
 
 export function ChartPalette() {
+  const store = useAppStore()
+  const tab = store.activeTab()
+
   function handleDragStart(e: React.DragEvent, type: ChartType) {
     e.dataTransfer.setData('chartType', type)
     e.dataTransfer.effectAllowed = 'copy'
   }
 
+  function handleClick(type: ChartType) {
+    // Cascade offset so multiple click-adds don't stack exactly
+    const count = tab?.charts.length ?? 0
+    const offset = (count % 8) * 20
+    store.addChart(type, 20 + offset, 20 + offset)
+  }
+
   return (
     <div className="flex flex-col gap-3 p-3">
-      <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide px-1">Elementos</p>
-      <p className="text-xs text-gray-400 dark:text-gray-500 px-1 -mt-2">Arraste para o canvas</p>
+      <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide px-1">Elements</p>
+      <p className="text-xs text-gray-400 dark:text-gray-500 px-1 -mt-2">Click or drag to canvas</p>
 
       {PALETTE.map(({ category, items }) => (
         <div key={category}>
@@ -72,8 +82,9 @@ export function ChartPalette() {
                 key={type}
                 draggable
                 onDragStart={e => handleDragStart(e, type)}
-                className="flex flex-col items-center gap-1 p-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg cursor-grab active:cursor-grabbing hover:border-[#005175] hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all select-none"
-                title={`Arraste "${label}" para o canvas`}
+                onClick={() => handleClick(type)}
+                className="flex flex-col items-center gap-1 p-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:border-[#005175] hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all select-none"
+                title={`Click or drag to add "${label}"`}
               >
                 <span className="text-xl leading-none text-gray-600 dark:text-gray-300">{icon}</span>
                 <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center leading-tight">{label}</span>

@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import type { Project, Tab, ChartItem, ChartType, AlignAction, CanvasBackground } from '../types'
 import { generateId } from '../lib/utils'
 import { getChartDefaults, getDefaultTitle } from '../lib/chartDefaults'
-import { snapToGrid, clampToBounds, hasCollision } from '../lib/collision'
+import { snapToGrid, clampToBounds } from '../lib/collision'
 
 const STORAGE_KEY = 'dashboard-planner-v1'
 const MAX_HISTORY = 50
@@ -144,7 +144,7 @@ export const useAppStore = create<AppStore>((set, get) => {
   // Bootstrap
   let projects = loadFromStorage()
   if (projects.length === 0) {
-    projects = [makeProject('Meu Primeiro Projeto')]
+    projects = [makeProject('My First Project')]
     saveToStorage(projects)
   }
   const activeProjectId = projects[0].id
@@ -197,7 +197,7 @@ export const useAppStore = create<AppStore>((set, get) => {
       const newProject: Project = {
         ...JSON.parse(JSON.stringify(src)) as Project,
         id: generateId(),
-        name: `${src.name} (cópia)`,
+        name: `${src.name} (copy)`,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         tabs: (JSON.parse(JSON.stringify(src)) as Project).tabs.map(t => ({
@@ -272,7 +272,7 @@ export const useAppStore = create<AppStore>((set, get) => {
       const newTab: Tab = {
         ...JSON.parse(JSON.stringify(src)) as Tab,
         id: generateId(),
-        name: `${src.name} (cópia)`,
+        name: `${src.name} (copy)`,
         undoStack: [],
         redoStack: [],
         charts: (JSON.parse(JSON.stringify(src)) as Tab).charts.map(c => ({ ...c, id: generateId() })),
@@ -374,8 +374,6 @@ export const useAppStore = create<AppStore>((set, get) => {
       const defaults = getChartDefaults(type, tab.canvasWidth)
       const clamped = clampToBounds(snappedX, snappedY, defaults.width, defaults.height, tab.canvasWidth, tab.canvasHeight)
 
-      if (hasCollision({ id: '__new__', ...clamped }, tab.charts)) return
-
       const maxZ = tab.charts.reduce((m, c) => Math.max(m, c.zIndex), 0)
       const chart: ChartItem = {
         ...defaults,
@@ -442,8 +440,6 @@ export const useAppStore = create<AppStore>((set, get) => {
       const snappedY = snapEnabled ? snapToGrid(y, gridSize) : y
       const clamped = clampToBounds(snappedX, snappedY, chart.width, chart.height, tab.canvasWidth, tab.canvasHeight)
 
-      if (hasCollision({ ...chart, ...clamped }, tab.charts)) return false
-
       get().pushHistory()
       set(s => ({
         projects: s.projects.map(p =>
@@ -476,8 +472,6 @@ export const useAppStore = create<AppStore>((set, get) => {
       const snappedX = snapEnabled ? snapToGrid(x, gridSize) : x
       const snappedY = snapEnabled ? snapToGrid(y, gridSize) : y
       const clamped = clampToBounds(snappedX, snappedY, snappedW, snappedH, tab.canvasWidth, tab.canvasHeight)
-
-      if (hasCollision({ id, ...clamped }, tab.charts)) return false
 
       get().pushHistory()
       set(s => ({
@@ -563,8 +557,6 @@ export const useAppStore = create<AppStore>((set, get) => {
       const offsetX = src.x + gridSize * 2
       const offsetY = src.y + gridSize * 2
       const clamped = clampToBounds(offsetX, offsetY, src.width, src.height, tab.canvasWidth, tab.canvasHeight)
-
-      if (hasCollision({ id: '__dup__', ...clamped }, tab.charts)) return
 
       const maxZ = tab.charts.reduce((m, c) => Math.max(m, c.zIndex), 0)
       const newChart: ChartItem = { ...src, id: generateId(), x: clamped.x, y: clamped.y, zIndex: maxZ + 1 }

@@ -31,6 +31,7 @@ export function GaugeChartPlaceholder({ chart, colors }: Props) {
     <svg width={W} height={H} style={{ display: 'block', fontFamily: 'system-ui, sans-serif' }}>
       <rect width={W} height={H} fill="white" />
       {chart.title && <text x={W / 2} y={16} fontSize={11} fontWeight="600" fill="#374151" textAnchor="middle">{chart.title}</text>}
+      {chart.subtitle && <text x={W / 2} y={28} fontSize={9} fill="#6b7280" textAnchor="middle">{chart.subtitle}</text>}
 
       {/* Track */}
       <path d={arcD(startDeg, endDeg, r)} fill="none" stroke="#e5e7eb" strokeWidth={trackW} strokeLinecap="round" />

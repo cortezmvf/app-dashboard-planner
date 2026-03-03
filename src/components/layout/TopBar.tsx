@@ -63,14 +63,14 @@ export function TopBar({ onNewProject }: { onNewProject: () => void }) {
           onClick={() => setDropdownOpen(v => !v)}
           className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded text-sm font-medium transition-colors max-w-[220px]"
         >
-          <span className="truncate">{project?.name ?? 'Sem projeto'}</span>
+          <span className="truncate">{project?.name ?? 'No project'}</span>
           <ChevronDown size={14} className="shrink-0" />
         </button>
 
         {dropdownOpen && (
           <div className="absolute top-full left-0 mt-1 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
             <div className="p-2 border-b border-gray-100 dark:border-gray-700">
-              <p className="text-xs text-gray-500 dark:text-gray-400 px-2 py-1 font-medium">PROJETOS</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 px-2 py-1 font-medium">PROJECTS</p>
             </div>
             <div className="max-h-64 overflow-y-auto">
               {sortedProjects.map(p => (
@@ -82,7 +82,7 @@ export function TopBar({ onNewProject }: { onNewProject: () => void }) {
                   }`}
                 >
                   <span className="truncate flex-1">{p.name}</span>
-                  {p.id === store.activeProjectId && <span className="text-xs text-blue-500">ativo</span>}
+                  {p.id === store.activeProjectId && <span className="text-xs text-blue-500">active</span>}
                 </button>
               ))}
             </div>
@@ -96,7 +96,7 @@ export function TopBar({ onNewProject }: { onNewProject: () => void }) {
         className="flex items-center gap-1 px-2.5 py-1.5 bg-white/10 hover:bg-white/20 rounded text-sm transition-colors"
       >
         <Plus size={14} />
-        <span className="hidden md:block">Novo</span>
+        <span className="hidden md:block">New</span>
       </button>
 
       <div className="flex-1" />
@@ -105,7 +105,7 @@ export function TopBar({ onNewProject }: { onNewProject: () => void }) {
       <button
         onClick={store.undo}
         disabled={!undoAvailable}
-        title="Desfazer (Ctrl+Z)"
+        title="Undo (Ctrl+Z)"
         className="p-1.5 rounded hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
       >
         <Undo2 size={16} />
@@ -113,7 +113,7 @@ export function TopBar({ onNewProject }: { onNewProject: () => void }) {
       <button
         onClick={store.redo}
         disabled={!redoAvailable}
-        title="Refazer (Ctrl+Y)"
+        title="Redo (Ctrl+Y)"
         className="p-1.5 rounded hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
       >
         <Redo2 size={16} />
@@ -123,7 +123,7 @@ export function TopBar({ onNewProject }: { onNewProject: () => void }) {
 
       {/* Save status */}
       <span className="text-xs text-white/60 hidden md:block">
-        {store.saveStatus === 'saved' ? 'Salvo' : store.saveStatus === 'saving' ? 'Salvando…' : '●'}
+        {store.saveStatus === 'saved' ? 'Saved' : store.saveStatus === 'saving' ? 'Saving…' : '●'}
       </span>
 
       {/* Export */}
@@ -133,7 +133,7 @@ export function TopBar({ onNewProject }: { onNewProject: () => void }) {
           className="flex items-center gap-1 px-2.5 py-1.5 bg-white/10 hover:bg-white/20 rounded text-sm transition-colors"
         >
           <Download size={14} />
-          <span className="hidden md:block">Exportar</span>
+          <span className="hidden md:block">Export</span>
           <ChevronDown size={12} />
         </button>
         {exportOpen && (
@@ -142,7 +142,7 @@ export function TopBar({ onNewProject }: { onNewProject: () => void }) {
               onClick={exportJSON}
               className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
-              Exportar JSON
+              Export JSON
             </button>
           </div>
         )}
@@ -152,7 +152,7 @@ export function TopBar({ onNewProject }: { onNewProject: () => void }) {
       <button
         onClick={() => store.setDarkMode(!store.isDarkMode)}
         className="p-1.5 rounded hover:bg-white/10 transition-colors"
-        title="Alternar tema"
+        title="Toggle theme"
       >
         {store.isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
       </button>
