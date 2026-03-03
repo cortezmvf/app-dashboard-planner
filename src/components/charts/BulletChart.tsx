@@ -4,7 +4,7 @@ interface Props { chart: ChartItem; colors: string[] }
 
 export function BulletChartPlaceholder({ chart, colors }: Props) {
   const W = chart.width, H = chart.height
-  const pad = { t: 24, r: 16, b: 10, l: 16 }
+  const pad = { t: chart.subtitle ? 38 : 26, r: 24, b: 16, l: 24 }
   const cW = W - pad.l - pad.r
   const trackH = Math.max(8, H * 0.25)
   const trackY = (H - pad.t - pad.b) / 2 + pad.t - trackH / 2
@@ -12,8 +12,8 @@ export function BulletChartPlaceholder({ chart, colors }: Props) {
   return (
     <svg width={W} height={H} style={{ display: 'block', fontFamily: 'system-ui, sans-serif' }}>
       <rect width={W} height={H} fill="white" />
-      {chart.title && <text x={pad.l} y={16} fontSize={11} fontWeight="600" fill="#374151">{chart.title}</text>}
-      {chart.subtitle && <text x={pad.l} y={28} fontSize={9} fill="#6b7280">{chart.subtitle}</text>}
+      {chart.title && <text x={pad.l} y={18} fontSize={11} fontWeight="600" fill="#374151">{chart.title}</text>}
+      {chart.subtitle && <text x={pad.l} y={30} fontSize={9} fill="#6b7280">{chart.subtitle}</text>}
 
       {/* Qualitative ranges */}
       <rect x={pad.l} y={trackY} width={cW} height={trackH} fill="#e5e7eb" rx={2} />

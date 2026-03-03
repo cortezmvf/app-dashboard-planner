@@ -22,6 +22,7 @@ const BASE: Omit<ChartItem, 'id' | 'type' | 'x' | 'y' | 'width' | 'height' | 'zI
   borderWidth: 0,
   borderStyle: 'solid',
   orientation: 'vertical',
+  dataCount: 6,
 }
 
 const SIZES: Record<ChartType, { width: number; height: number }> = {
@@ -42,6 +43,9 @@ const SIZES: Record<ChartType, { width: number; height: number }> = {
   'divider':           { width: 400, height: 20 },
   'shape-rect':        { width: 200, height: 200 },
   'shape-ellipse':     { width: 200, height: 200 },
+  'filled-map':        { width: 500, height: 340 },
+  'treemap':           { width: 400, height: 300 },
+  'heatmap':           { width: 400, height: 280 },
 }
 
 export function getChartDefaults(
@@ -76,6 +80,9 @@ export function getDefaultTitle(type: ChartType): string {
     'divider':           '',
     'shape-rect':        '',
     'shape-ellipse':     '',
+    'filled-map':        'US Map',
+    'treemap':           'Treemap',
+    'heatmap':           'Heatmap',
   }
   return titles[type] ?? ''
 }

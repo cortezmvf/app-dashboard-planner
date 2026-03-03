@@ -1,7 +1,7 @@
 import { useRef, useCallback } from 'react'
 import { useAppStore } from '../../store/useAppStore'
 import { ChartItemWrapper } from './ChartItemWrapper'
-import { BG_COLORS } from '../../lib/utils'
+import { resolveBgColor } from '../../lib/utils'
 import { snapToGrid, clampToBounds } from '../../lib/collision'
 import { getChartDefaults } from '../../lib/chartDefaults'
 import type { ChartType } from '../../types'
@@ -54,7 +54,7 @@ export function Canvas() {
     )
   }
 
-  const bgColor = BG_COLORS[tab.canvasBackground] ?? '#ffffff'
+  const bgColor = resolveBgColor(tab.canvasBackground)
   const gridSize = project.gridSize
   const sortedCharts = [...tab.charts].sort((a, b) => a.zIndex - b.zIndex)
 
@@ -107,7 +107,7 @@ export function Canvas() {
                     cx={gridSize / 2}
                     cy={gridSize / 2}
                     r={0.7}
-                    fill={tab.canvasBackground === 'black' || tab.canvasBackground === 'dark-gray' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)'}
+                    fill={['black','dark-gray'].includes(tab.canvasBackground) || bgColor < '#777777' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)'}
                   />
                 </pattern>
               </defs>

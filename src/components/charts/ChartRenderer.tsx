@@ -1,6 +1,9 @@
 import type { ChartItem } from '../../types'
 import { BarChartPlaceholder } from './BarChart'
 import { LineChartPlaceholder } from './LineChart'
+import { HeatmapChartPlaceholder } from './HeatmapChart'
+import { TreemapChartPlaceholder } from './TreemapChart'
+import { FilledMapChartPlaceholder } from './FilledMapChart'
 import { AreaChartPlaceholder } from './AreaChart'
 import { ComboChartPlaceholder } from './ComboChart'
 import { ScatterChartPlaceholder } from './ScatterChart'
@@ -54,6 +57,12 @@ export function ChartRenderer({ chart, colors }: Props) {
     case 'shape-rect':
     case 'shape-ellipse':
       return <ShapePlaceholder {...props} />
+    case 'filled-map':
+      return <FilledMapChartPlaceholder {...props} />
+    case 'treemap':
+      return <TreemapChartPlaceholder {...props} />
+    case 'heatmap':
+      return <HeatmapChartPlaceholder {...props} />
     default:
       return <div className="w-full h-full bg-gray-100 flex items-center justify-center text-xs text-gray-400">?</div>
   }

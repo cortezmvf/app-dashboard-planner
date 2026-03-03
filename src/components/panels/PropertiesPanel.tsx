@@ -1,7 +1,7 @@
 import { AlignLeft, AlignCenter, AlignRight, Bold, Italic, Trash2, Copy, Lock, Unlock } from 'lucide-react'
 import { useAppStore } from '../../store/useAppStore'
 import { COLOR_SCHEMAS } from '../../lib/colorSchemas'
-import type { ChartItem, AlignAction, CanvasBackground } from '../../types'
+import type { ChartItem, AlignAction } from '../../types'
 
 const FONT_SIZE_OPTIONS = [
   { value: 'small', label: 'Small (12px)' },
@@ -20,11 +20,11 @@ const BG_OPTIONS = [
   { value: 'schema-3', label: 'Theme color 3' },
 ]
 
-const CANVAS_BG_OPTIONS: { value: CanvasBackground; label: string }[] = [
-  { value: 'white', label: 'White' },
-  { value: 'light-gray', label: 'Light Gray' },
-  { value: 'dark-gray', label: 'Dark Gray' },
-  { value: 'black', label: 'Black' },
+const CANVAS_BG_PRESETS = [
+  { value: 'white', label: 'White', color: '#ffffff' },
+  { value: 'light-gray', label: 'Light Gray', color: '#f3f4f6' },
+  { value: 'dark-gray', label: 'Dark Gray', color: '#374151' },
+  { value: 'black', label: 'Black', color: '#111827' },
 ]
 
 interface FieldProps { label: string; children: React.ReactNode }
@@ -126,13 +126,26 @@ export function PropertiesPanel() {
               ))}
             </div>
             <Field label="Background">
-              <select
-                value={tab.canvasBackground}
-                onChange={e => store.updateTabCanvas(tab.id, tab.canvasWidth, tab.canvasHeight, e.target.value as CanvasBackground)}
-                className="w-full text-xs px-2 py-1.5 border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none"
-              >
-                {CANVAS_BG_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
+              <div className="space-y-1.5">
+                <div className="flex gap-1.5 flex-wrap">
+                  {CANVAS_BG_PRESETS.map(o => (
+                    <button
+                      key={o.value}
+                      title={o.label}
+                      onClick={() => store.updateTabCanvas(tab.id, tab.canvasWidth, tab.canvasHeight, o.value)}
+                      style={{ backgroundColor: o.color }}
+                      className={`w-7 h-7 rounded border-2 transition-all ${tab.canvasBackground === o.value ? 'border-[#005175] scale-110' : 'border-gray-300 dark:border-gray-500'}`}
+                    />
+                  ))}
+                  <input
+                    type="color"
+                    value={tab.canvasBackground.startsWith('#') ? tab.canvasBackground : '#ffffff'}
+                    onChange={e => store.updateTabCanvas(tab.id, tab.canvasWidth, tab.canvasHeight, e.target.value)}
+                    className="w-7 h-7 rounded border-2 border-gray-300 dark:border-gray-500 cursor-pointer bg-white p-0.5"
+                    title="Custom color"
+                  />
+                </div>
+              </div>
             </Field>
           </div>
         )}
@@ -199,6 +212,7 @@ export function PropertiesPanel() {
   const isTable = chart.type === 'table'
   const isImage = chart.type === 'image-placeholder'
   const showsBorder = !['divider'].includes(chart.type)
+  const supportsDataCount = ['bar', 'stacked-bar', 'line', 'scatter', 'table'].includes(chart.type)
 
   return (
     <div className="flex flex-col">
@@ -314,13 +328,21 @@ export function PropertiesPanel() {
             <Field label="Orientation">
               <div className="flex gap-1.5">
                 <button
-                  onClick={() => update({ orientation: 'vertical' })}
+                  onClick={() => {
+                    if (chart.orientation === 'horizontal') {
+                      update({ orientation: 'vertical', xAxisLabel: chart.yAxisLabel, yAxisLabel: chart.xAxisLabel })
+                    }
+                  }}
                   className={`flex-1 text-xs py-1.5 rounded border transition-colors ${(chart.orientation ?? 'vertical') === 'vertical' ? 'border-[#005175] bg-blue-50 text-[#005175]' : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50'}`}
                 >
                   Vertical
                 </button>
                 <button
-                  onClick={() => update({ orientation: 'horizontal' })}
+                  onClick={() => {
+                    if ((chart.orientation ?? 'vertical') === 'vertical') {
+                      update({ orientation: 'horizontal', xAxisLabel: chart.yAxisLabel, yAxisLabel: chart.xAxisLabel })
+                    }
+                  }}
                   className={`flex-1 text-xs py-1.5 rounded border transition-colors ${chart.orientation === 'horizontal' ? 'border-[#005175] bg-blue-50 text-[#005175]' : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50'}`}
                 >
                   Horizontal
@@ -409,41 +431,68 @@ export function PropertiesPanel() {
             </Field>
           )}
 
+          {/* Data count */}
+          {supportsDataCount && (
+            <Field label={isTable ? 'Max rows' : isBarChart ? 'Number of bars' : chart.type === 'scatter' ? 'Number of dots' : 'Number of points'}>
+              <input
+                type="number"
+                min={1}
+                max={isTable ? 20 : chart.type === 'scatter' ? 30 : 15}
+                value={chart.dataCount ?? 6}
+                onChange={e => update({ dataCount: Math.max(1, Number(e.target.value)) })}
+                className="w-full text-xs px-2 py-1.5 border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:border-[#005175]"
+              />
+            </Field>
+          )}
+
           {/* Border options */}
           {showsBorder && (
             <div className="border-t border-gray-100 dark:border-gray-700 pt-2.5 space-y-2">
-              <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide">Border</p>
-              <div className="grid grid-cols-2 gap-2">
-                <Field label="Color">
-                  <input
-                    type="color"
-                    value={chart.borderColor || '#e5e7eb'}
-                    onChange={e => update({ borderColor: e.target.value })}
-                    className="w-full h-8 border border-gray-200 dark:border-gray-600 rounded cursor-pointer bg-white"
-                  />
-                </Field>
-                <Field label="Width (px)">
-                  <input
-                    type="number"
-                    min={0}
-                    max={20}
-                    value={chart.borderWidth ?? 0}
-                    onChange={e => update({ borderWidth: Number(e.target.value) })}
-                    className="w-full text-xs px-2 py-1.5 border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:border-[#005175]"
-                  />
-                </Field>
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide">Border</p>
+                <input
+                  type="checkbox"
+                  checked={(chart.borderWidth ?? 0) > 0}
+                  onChange={e => update({ borderWidth: e.target.checked ? (chart.borderWidth > 0 ? chart.borderWidth : 1) : 0 })}
+                  className="w-3.5 h-3.5 accent-[#005175]"
+                  title="Enable border"
+                />
               </div>
-              <Field label="Style">
-                <select
-                  value={chart.borderStyle ?? 'solid'}
-                  onChange={e => update({ borderStyle: e.target.value as ChartItem['borderStyle'] })}
-                  className="w-full text-xs px-2 py-1.5 border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none"
-                >
-                  <option value="solid">Solid</option>
-                  <option value="dashed">Dashed</option>
-                  <option value="dotted">Dotted</option>
-                </select>
-              </Field>
+              {(chart.borderWidth ?? 0) > 0 && (
+                <>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Field label="Color">
+                      <input
+                        type="color"
+                        value={chart.borderColor || '#e5e7eb'}
+                        onChange={e => update({ borderColor: e.target.value })}
+                        className="w-full h-8 border border-gray-200 dark:border-gray-600 rounded cursor-pointer bg-white"
+                      />
+                    </Field>
+                    <Field label="Width (px)">
+                      <input
+                        type="number"
+                        min={1}
+                        max={20}
+                        value={chart.borderWidth ?? 1}
+                        onChange={e => update({ borderWidth: Number(e.target.value) })}
+                        className="w-full text-xs px-2 py-1.5 border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:border-[#005175]"
+                      />
+                    </Field>
+                  </div>
+                  <Field label="Style">
+                    <select
+                      value={chart.borderStyle ?? 'solid'}
+                      onChange={e => update({ borderStyle: e.target.value as ChartItem['borderStyle'] })}
+                      className="w-full text-xs px-2 py-1.5 border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none"
+                    >
+                      <option value="solid">Solid</option>
+                      <option value="dashed">Dashed</option>
+                      <option value="dotted">Dotted</option>
+                    </select>
+                  </Field>
+                </>
+              )}
             </div>
           )}
         </div>

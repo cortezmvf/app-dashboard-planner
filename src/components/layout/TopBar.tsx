@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { LayoutDashboard, Plus, ChevronDown, Download, Undo2, Redo2, Moon, Sun, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { useAppStore } from '../../store/useAppStore'
+import { resolveBgColor } from '../../lib/utils'
 
 export function TopBar({ onNewProject }: { onNewProject: () => void }) {
   const store = useAppStore()
@@ -34,6 +35,63 @@ export function TopBar({ onNewProject }: { onNewProject: () => void }) {
     a.download = `${project.name}_${tab.name}.json`
     a.click()
     URL.revokeObjectURL(url)
+    setExportOpen(false)
+  }
+
+  async function buildCanvasImage(): Promise<HTMLCanvasElement | null> {
+    if (!project || !tab) return null
+    const canvasEl = document.getElementById('canvas-export')
+    if (!canvasEl) return null
+
+    const offscreen = document.createElement('canvas')
+    offscreen.width = tab.canvasWidth
+    offscreen.height = tab.canvasHeight
+    const ctx = offscreen.getContext('2d')!
+
+    // Background
+    ctx.fillStyle = resolveBgColor(tab.canvasBackground)
+    ctx.fillRect(0, 0, tab.canvasWidth, tab.canvasHeight)
+
+    // Draw each chart SVG at its position
+    const sorted = [...tab.charts].sort((a, b) => a.zIndex - b.zIndex)
+    for (const chart of sorted) {
+      const wrapper = canvasEl.querySelector(`[data-chart-id="${chart.id}"]`)
+      if (!wrapper) continue
+      const svgEl = wrapper.querySelector('svg')
+      if (!svgEl) continue
+      try {
+        const svgStr = new XMLSerializer().serializeToString(svgEl)
+        const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' })
+        const url = URL.createObjectURL(blob)
+        await new Promise<void>(resolve => {
+          const img = new Image()
+          img.onload = () => { ctx.drawImage(img, chart.x, chart.y, chart.width, chart.height); URL.revokeObjectURL(url); resolve() }
+          img.onerror = () => { URL.revokeObjectURL(url); resolve() }
+          img.src = url
+        })
+      } catch { /* skip failed elements */ }
+    }
+    return offscreen
+  }
+
+  async function exportJPEG() {
+    const offscreen = await buildCanvasImage()
+    if (!offscreen || !project || !tab) return
+    const link = document.createElement('a')
+    link.download = `${project.name}_${tab.name}.jpg`
+    link.href = offscreen.toDataURL('image/jpeg', 0.92)
+    link.click()
+    setExportOpen(false)
+  }
+
+  async function exportPDF() {
+    const offscreen = await buildCanvasImage()
+    if (!offscreen || !project || !tab) return
+    const dataUrl = offscreen.toDataURL('image/jpeg', 0.92)
+    const win = window.open('', '_blank')
+    if (!win) return
+    win.document.write(`<!DOCTYPE html><html><head><title>${project.name} — ${tab.name}</title><style>*{margin:0;padding:0}body{display:flex;justify-content:center;align-items:flex-start}img{max-width:100%;height:auto}@media print{@page{size:landscape;margin:0}}</style></head><body><img src="${dataUrl}" onload="setTimeout(()=>{window.print()},100)" /></body></html>`)
+    win.document.close()
     setExportOpen(false)
   }
 
@@ -143,6 +201,18 @@ export function TopBar({ onNewProject }: { onNewProject: () => void }) {
               className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
               Export JSON
+            </button>
+            <button
+              onClick={exportJPEG}
+              className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              Export JPEG
+            </button>
+            <button
+              onClick={exportPDF}
+              className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              Export PDF
             </button>
           </div>
         )}

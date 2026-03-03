@@ -16,8 +16,11 @@ export type ChartType =
   | 'divider'
   | 'shape-rect'
   | 'shape-ellipse'
+  | 'filled-map'
+  | 'treemap'
+  | 'heatmap'
 
-export type CanvasBackground = 'white' | 'light-gray' | 'dark-gray' | 'black'
+export type CanvasBackground = string
 
 export interface ChartItem {
   id: string
@@ -54,6 +57,8 @@ export interface ChartItem {
   borderStyle: 'solid' | 'dashed' | 'dotted'
   // Chart orientation
   orientation: 'vertical' | 'horizontal'
+  // Number of data points to display
+  dataCount: number
 }
 
 export interface Tab {

@@ -43,6 +43,14 @@ const PALETTE: { category: string; items: PaletteItem[] }[] = [
     ],
   },
   {
+    category: 'Advanced Charts',
+    items: [
+      { type: 'filled-map', label: 'Filled Map', icon: '🗺' },
+      { type: 'treemap', label: 'Treemap', icon: '▦' },
+      { type: 'heatmap', label: 'Heatmap', icon: '▩' },
+    ],
+  },
+  {
     category: 'Layout',
     items: [
       { type: 'image-placeholder', label: 'Image', icon: '🖼' },

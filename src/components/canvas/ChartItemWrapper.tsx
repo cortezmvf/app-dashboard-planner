@@ -96,6 +96,7 @@ export function ChartItemWrapper({ chart }: Props) {
         onContextMenu={handleContextMenu}
       >
         <div
+          data-chart-id={chart.id}
           style={{
             width: '100%',
             height: '100%',

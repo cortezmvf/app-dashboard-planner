@@ -33,3 +33,9 @@ export const BG_COLORS: Record<string, string> = {
   'dark-gray':  '#374151',
   'black':      '#111827',
 }
+
+/** Resolve a canvas background value (preset name or hex string) to a CSS color. */
+export function resolveBgColor(bg: string): string {
+  if (bg.startsWith('#') || bg.startsWith('rgb')) return bg
+  return BG_COLORS[bg] ?? '#ffffff'
+}

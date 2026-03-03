@@ -33,7 +33,7 @@ export function DonutChartPlaceholder({ chart, colors }: Props) {
   const legendH = showLegend ? SEGMENTS.length * 13 + 4 : 0
   const cx = W / 2
   const cy = (H - titleH - legendH) / 2 + titleH
-  const r = Math.min(W, H - titleH - legendH) * 0.38
+  const r = Math.min(W, H - titleH - legendH) * 0.34
   const innerR = isPie ? 0 : r * 0.55
 
   let current = 0
