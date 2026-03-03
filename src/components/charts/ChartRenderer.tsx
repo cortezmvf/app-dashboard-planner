@@ -9,11 +9,9 @@ import { ComboChartPlaceholder } from './ComboChart'
 import { ScatterChartPlaceholder } from './ScatterChart'
 import { DonutChartPlaceholder } from './DonutChart'
 import { KpiCardPlaceholder } from './KpiCard'
-import { GaugeChartPlaceholder } from './GaugeChart'
 import { BulletChartPlaceholder } from './BulletChart'
 import { TableChartPlaceholder } from './TableChart'
 import { TextBoxPlaceholder } from './TextBox'
-import { ImagePlaceholderComp } from './ImagePlaceholder'
 import { DividerComp } from './Divider'
 import { ShapePlaceholder } from './Shape'
 
@@ -42,16 +40,12 @@ export function ChartRenderer({ chart, colors }: Props) {
       return <DonutChartPlaceholder {...props} />
     case 'kpi-card':
       return <KpiCardPlaceholder {...props} />
-    case 'gauge':
-      return <GaugeChartPlaceholder {...props} />
     case 'bullet':
       return <BulletChartPlaceholder {...props} />
     case 'table':
       return <TableChartPlaceholder {...props} />
     case 'text-box':
       return <TextBoxPlaceholder {...props} />
-    case 'image-placeholder':
-      return <ImagePlaceholderComp {...props} />
     case 'divider':
       return <DividerComp {...props} />
     case 'shape-rect':

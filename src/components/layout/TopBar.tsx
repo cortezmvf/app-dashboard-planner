@@ -57,8 +57,12 @@ export function TopBar({ onNewProject }: { onNewProject: () => void }) {
     for (const chart of sorted) {
       const wrapper = canvasEl.querySelector(`[data-chart-id="${chart.id}"]`)
       if (!wrapper) continue
-      const svgEl = wrapper.querySelector('svg')
+      // Find the first SVG that is NOT a Lucide icon (icon SVGs have class "lucide")
+      const svgEl = wrapper.querySelector('svg:not(.lucide)')
       if (!svgEl) continue
+      // Extra guard: skip tiny SVGs that are clearly icons (< 20px)
+      const svgW = parseInt(svgEl.getAttribute('width') ?? '0')
+      if (svgW > 0 && svgW < 20) continue
       try {
         const svgStr = new XMLSerializer().serializeToString(svgEl)
         const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' })

@@ -208,9 +208,8 @@ export function PropertiesPanel() {
   const isBarChart = ['bar', 'stacked-bar'].includes(chart.type)
   const isChart = ['bar', 'stacked-bar', 'line', 'area', 'combo', 'scatter'].includes(chart.type)
   const isPieDonut = ['pie', 'donut'].includes(chart.type)
-  const isKpiGauge = ['kpi-card', 'gauge', 'bullet'].includes(chart.type)
+  const isKpiGauge = ['kpi-card', 'bullet'].includes(chart.type)
   const isTable = chart.type === 'table'
-  const isImage = chart.type === 'image-placeholder'
   const showsBorder = !['divider'].includes(chart.type)
   const supportsDataCount = ['bar', 'stacked-bar', 'line', 'scatter', 'table'].includes(chart.type)
 
@@ -425,12 +424,6 @@ export function PropertiesPanel() {
             </>
           )}
 
-          {isImage && (
-            <Field label="Alt text">
-              <Input value={chart.altText} onChange={v => update({ altText: v })} placeholder="Image description" />
-            </Field>
-          )}
-
           {/* Data count */}
           {supportsDataCount && (
             <Field label={isTable ? 'Max rows' : isBarChart ? 'Number of bars' : chart.type === 'scatter' ? 'Number of dots' : 'Number of points'}>
@@ -448,51 +441,39 @@ export function PropertiesPanel() {
           {/* Border options */}
           {showsBorder && (
             <div className="border-t border-gray-100 dark:border-gray-700 pt-2.5 space-y-2">
-              <div className="flex items-center justify-between">
-                <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide">Border</p>
-                <input
-                  type="checkbox"
-                  checked={(chart.borderWidth ?? 0) > 0}
-                  onChange={e => update({ borderWidth: e.target.checked ? (chart.borderWidth > 0 ? chart.borderWidth : 1) : 0 })}
-                  className="w-3.5 h-3.5 accent-[#005175]"
-                  title="Enable border"
-                />
-              </div>
-              {(chart.borderWidth ?? 0) > 0 && (
-                <>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Field label="Color">
-                      <input
-                        type="color"
-                        value={chart.borderColor || '#e5e7eb'}
-                        onChange={e => update({ borderColor: e.target.value })}
-                        className="w-full h-8 border border-gray-200 dark:border-gray-600 rounded cursor-pointer bg-white"
-                      />
-                    </Field>
-                    <Field label="Width (px)">
-                      <input
-                        type="number"
-                        min={1}
-                        max={20}
-                        value={chart.borderWidth ?? 1}
-                        onChange={e => update({ borderWidth: Number(e.target.value) })}
-                        className="w-full text-xs px-2 py-1.5 border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:border-[#005175]"
-                      />
-                    </Field>
+              <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide">Frame</p>
+              <div className="grid grid-cols-2 gap-2">
+                <Field label="Border width (px)">
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="checkbox"
+                      checked={(chart.borderWidth ?? 0) > 0}
+                      onChange={e => update({ borderWidth: e.target.checked ? (chart.borderWidth > 0 ? chart.borderWidth : 2) : 0 })}
+                      className="w-3.5 h-3.5 accent-[#005175] shrink-0"
+                    />
+                    <input
+                      type="number"
+                      min={1}
+                      max={20}
+                      value={chart.borderWidth ?? 2}
+                      disabled={(chart.borderWidth ?? 0) === 0}
+                      onChange={e => update({ borderWidth: Number(e.target.value) })}
+                      className="w-full text-xs px-2 py-1.5 border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:border-[#005175] disabled:opacity-40"
+                    />
                   </div>
-                  <Field label="Style">
-                    <select
-                      value={chart.borderStyle ?? 'solid'}
-                      onChange={e => update({ borderStyle: e.target.value as ChartItem['borderStyle'] })}
-                      className="w-full text-xs px-2 py-1.5 border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none"
-                    >
-                      <option value="solid">Solid</option>
-                      <option value="dashed">Dashed</option>
-                      <option value="dotted">Dotted</option>
-                    </select>
-                  </Field>
-                </>
-              )}
+                </Field>
+                <Field label="Corner radius (px)">
+                  <input
+                    type="number"
+                    min={0}
+                    max={64}
+                    value={chart.borderRadius ?? 0}
+                    onChange={e => update({ borderRadius: Number(e.target.value) })}
+                    className="w-full text-xs px-2 py-1.5 border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:border-[#005175]"
+                  />
+                </Field>
+              </div>
+              <p className="text-[10px] text-gray-400 dark:text-gray-500">Border color follows the active color schema</p>
             </div>
           )}
         </div>

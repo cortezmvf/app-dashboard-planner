@@ -8,11 +8,9 @@ export type ChartType =
   | 'pie'
   | 'donut'
   | 'kpi-card'
-  | 'gauge'
   | 'bullet'
   | 'table'
   | 'text-box'
-  | 'image-placeholder'
   | 'divider'
   | 'shape-rect'
   | 'shape-ellipse'
@@ -59,6 +57,8 @@ export interface ChartItem {
   orientation: 'vertical' | 'horizontal'
   // Number of data points to display
   dataCount: number
+  // Border radius (px)
+  borderRadius: number
 }
 
 export interface Tab {

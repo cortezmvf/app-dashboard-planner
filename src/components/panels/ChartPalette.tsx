@@ -9,10 +9,10 @@ interface PaletteItem {
 
 const PALETTE: { category: string; items: PaletteItem[] }[] = [
   {
-    category: 'Text & Annotation',
+    category: 'Text & Data',
     items: [
       { type: 'text-box', label: 'Text Box', icon: 'T' },
-      { type: 'divider', label: 'Divider', icon: '—' },
+      { type: 'table', label: 'Table', icon: '⊟' },
     ],
   },
   {
@@ -32,14 +32,7 @@ const PALETTE: { category: string; items: PaletteItem[] }[] = [
     category: 'Indicators',
     items: [
       { type: 'kpi-card', label: 'KPI Card', icon: '#' },
-      { type: 'gauge', label: 'Gauge', icon: '◑' },
       { type: 'bullet', label: 'Bullet Chart', icon: '▷' },
-    ],
-  },
-  {
-    category: 'Data',
-    items: [
-      { type: 'table', label: 'Table', icon: '⊟' },
     ],
   },
   {
@@ -53,7 +46,6 @@ const PALETTE: { category: string; items: PaletteItem[] }[] = [
   {
     category: 'Layout',
     items: [
-      { type: 'image-placeholder', label: 'Image', icon: '🖼' },
       { type: 'shape-rect', label: 'Rectangle', icon: '▭' },
       { type: 'shape-ellipse', label: 'Ellipse', icon: '⬭' },
     ],

@@ -23,6 +23,7 @@ const BASE: Omit<ChartItem, 'id' | 'type' | 'x' | 'y' | 'width' | 'height' | 'zI
   borderStyle: 'solid',
   orientation: 'vertical',
   dataCount: 6,
+  borderRadius: 0,
 }
 
 const SIZES: Record<ChartType, { width: number; height: number }> = {
@@ -35,11 +36,9 @@ const SIZES: Record<ChartType, { width: number; height: number }> = {
   'pie':               { width: 300, height: 300 },
   'donut':             { width: 300, height: 300 },
   'kpi-card':          { width: 200, height: 120 },
-  'gauge':             { width: 240, height: 200 },
   'bullet':            { width: 320, height: 100 },
   'table':             { width: 400, height: 280 },
   'text-box':          { width: 300, height: 60 },
-  'image-placeholder': { width: 300, height: 200 },
   'divider':           { width: 400, height: 20 },
   'shape-rect':        { width: 200, height: 200 },
   'shape-ellipse':     { width: 200, height: 200 },
@@ -72,11 +71,9 @@ export function getDefaultTitle(type: ChartType): string {
     'pie':               'Pie Chart',
     'donut':             'Donut Chart',
     'kpi-card':          'KPI',
-    'gauge':             'Gauge',
     'bullet':            'Bullet Chart',
     'table':             'Table',
     'text-box':          'Title',
-    'image-placeholder': 'Image',
     'divider':           '',
     'shape-rect':        '',
     'shape-ellipse':     '',

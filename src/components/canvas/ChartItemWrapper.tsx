@@ -69,9 +69,10 @@ export function ChartItemWrapper({ chart }: Props) {
   const canvasH = tab?.canvasHeight ?? 720
   const snapGrid: [number, number] = store.snapEnabled ? [gridSize, gridSize] : [1, 1]
 
-  // Border style from chart properties
-  const borderStyle = chart.borderWidth > 0
-    ? `${chart.borderWidth}px ${chart.borderStyle ?? 'solid'} ${chart.borderColor ?? '#e5e7eb'}`
+  // Border uses inset box-shadow so it renders on top of content (fixes top/left-only bug)
+  // Color always follows the active color schema
+  const borderShadow = chart.borderWidth > 0
+    ? `inset 0 0 0 ${chart.borderWidth}px ${colors[0]}`
     : undefined
 
   return (
@@ -102,7 +103,9 @@ export function ChartItemWrapper({ chart }: Props) {
             height: '100%',
             outline: isSelected ? '2px solid #005175' : 'none',
             outlineOffset: '-1px',
-            border: borderStyle,
+            boxShadow: borderShadow,
+            borderRadius: chart.borderRadius > 0 ? chart.borderRadius : undefined,
+            overflow: chart.borderRadius > 0 ? 'hidden' : undefined,
             boxSizing: 'border-box',
             cursor: chart.locked ? 'default' : 'move',
             userSelect: 'none',
