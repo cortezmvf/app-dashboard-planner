@@ -68,7 +68,7 @@ interface AgentStore {
   setFormData: (data: IntakeFormData) => void
   submitForm: (data: IntakeFormData) => Promise<void>
   submitAdjustment: (text: string) => Promise<void>
-  buildDashboard: () => Promise<void>
+  buildDashboard: (selectedViewNames: string[]) => Promise<void>
   resetError: () => void
 }
 
@@ -211,18 +211,36 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
     }
   },
 
-  buildDashboard: async () => {
+  buildDashboard: async (selectedViewNames: string[]) => {
     const { marketingBrief, formData } = get()
     if (!marketingBrief) return
 
     set({ phase: 'generating-layout', error: null })
 
-    const briefJson = JSON.stringify(marketingBrief, null, 2)
+    // Filter brief to only selected views
+    const filteredBrief = {
+      ...marketingBrief,
+      views: marketingBrief.views.filter(v => selectedViewNames.includes(v.name)),
+    }
+
+    const viewList = filteredBrief.views
+      .map((v, i) => `${i + 1}. ${v.name} — "${v.question}"`)
+      .join('\n')
+
+    const briefJson = JSON.stringify(filteredBrief, null, 2)
     const messages: ChatMessage[] = [
       { role: 'system', content: datavizPromptRaw },
       {
         role: 'user',
-        content: `Here is the marketing brief for ${formData.clientName}. Please generate the full dashboard layout JSON.\n\n${briefJson}`,
+        content: `Generate the dashboard layout for ${formData.clientName}.
+
+You MUST create exactly ${filteredBrief.views.length} tab(s) in your JSON output — one for each view listed below. Do not skip, combine, or reorder any view.
+
+REQUIRED TABS (${filteredBrief.views.length} total):
+${viewList}
+
+Full marketing brief:
+${briefJson}`,
       },
     ]
 

@@ -50,13 +50,13 @@ type: "text-box"
 x: 20, y: 10
 width: 900, height: 70
 content: [the view's central question, verbatim from the brief]
-fontSize: "xlarge"
+fontSize: "large"
 fontWeight: "bold"
 textAlign: "left"
 textBackground: "transparent"
 ```
 
-### 2. Filters Text-Box (top-right)
+### 2. Filters Text-Box (top-RIGHT — CRITICAL: x must be 940 or higher)
 ```
 type: "text-box"
 x: 940, y: 10
@@ -66,6 +66,7 @@ fontSize: "small"
 textAlign: "left"
 textBackground: "transparent"
 ```
+IMPORTANT: The filters text-box MUST always be placed on the RIGHT side of the canvas at x=940. Never place it on the left side. It sits to the right of the title text-box.
 
 ### 3. Design Note Text-Box (bottom)
 ```
@@ -97,6 +98,10 @@ textBackground: "transparent"
 - Charts with axes (bar, line, area, combo, scatter) MUST include `xAxisLabel` and `yAxisLabel`
 - KPI cards MUST include `valueLabel` (e.g. "$0" or "0%") and `unit` (e.g. "$", "%", "")
 - Tables MUST include `columns` as comma-separated column names (6–8 columns relevant to the view)
+
+## CRITICAL: Generate ALL Tabs
+
+The user message will specify an exact list of views to build. You MUST produce one tab in the output JSON for EVERY view in that list — no exceptions, no combining, no skipping. If the list has 6 views, your JSON must have 6 tabs. Count the views, then count your tabs before outputting — they must match.
 
 ## Output Format
 
@@ -137,7 +142,9 @@ Respond with ONLY a valid JSON object. No markdown fences, no extra text. Use th
 
 ## Quality Checklist (verify before outputting)
 
+- [ ] Number of tabs in output matches the number of views requested in the user message
 - [ ] Every tab has exactly 3 structural text-boxes (title, filters, design note)
+- [ ] Filters text-box is on the RIGHT side (x=940), NOT on the left
 - [ ] No data chart exceeds x + width > 1260 or y + height > 710
 - [ ] No two charts overlap (check all bounding boxes)
 - [ ] All data charts have borderRadius: 10

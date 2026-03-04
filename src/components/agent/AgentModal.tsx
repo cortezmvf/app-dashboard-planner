@@ -80,7 +80,7 @@ export function AgentModal() {
               brief={store.marketingBrief}
               streamingText={store.streamingText}
               phase={store.phase}
-              onBuild={store.buildDashboard}
+              onBuild={(selectedViewNames) => store.buildDashboard(selectedViewNames)}
               onAdjust={store.submitAdjustment}
             />
           )}

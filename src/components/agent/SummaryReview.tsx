@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { CheckCircle, Edit3, Loader2 } from 'lucide-react'
 import type { MarketingBrief } from '../../store/useAgentStore'
 
@@ -6,17 +6,37 @@ interface Props {
   brief: MarketingBrief
   streamingText: string
   phase: 'review' | 'adjusting' | 'generating-layout'
-  onBuild: () => void
+  onBuild: (selectedViewNames: string[]) => void
   onAdjust: (text: string) => void
 }
 
 export function SummaryReview({ brief, streamingText, phase, onBuild, onAdjust }: Props) {
   const [adjustText, setAdjustText] = useState('')
   const [showAdjust, setShowAdjust] = useState(false)
+  const [selectedViews, setSelectedViews] = useState<Set<string>>(
+    () => new Set(brief.views.map(v => v.name))
+  )
+
+  // Re-select all when brief changes (after an adjustment)
+  useEffect(() => {
+    setSelectedViews(new Set(brief.views.map(v => v.name)))
+  }, [brief])
 
   const isAdjusting = phase === 'adjusting'
   const isBuilding = phase === 'generating-layout'
   const isBusy = isAdjusting || isBuilding
+
+  function toggleView(name: string) {
+    setSelectedViews(prev => {
+      const next = new Set(prev)
+      if (next.has(name)) {
+        next.delete(name)
+      } else {
+        next.add(name)
+      }
+      return next
+    })
+  }
 
   function handleAdjust() {
     if (!adjustText.trim()) return
@@ -24,6 +44,8 @@ export function SummaryReview({ brief, streamingText, phase, onBuild, onAdjust }
     setAdjustText('')
     setShowAdjust(false)
   }
+
+  const selectedCount = selectedViews.size
 
   return (
     <div className="flex flex-col h-full">
@@ -53,43 +75,75 @@ export function SummaryReview({ brief, streamingText, phase, onBuild, onAdjust }
           )}
         </div>
 
-        {/* Views list */}
+        {/* Views list with checkboxes */}
         {!isAdjusting && (
           <div>
-            <h3 className="text-xs font-semibold text-[#005175] uppercase tracking-wider mb-3">
-              Views to Build ({brief.views.length})
-            </h3>
-            <div className="space-y-3">
-              {brief.views.map((view, i) => (
-                <div
-                  key={i}
-                  className="flex gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700"
-                >
-                  <div className="w-6 h-6 rounded-full bg-[#005175] text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
-                    {i + 1}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="font-medium text-sm text-gray-900 dark:text-white">{view.name}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 italic">"{view.question}"</div>
-                    <div className="text-xs text-gray-600 dark:text-gray-300 mt-1">{view.purpose}</div>
-                    {view.keyMetrics.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {view.keyMetrics.slice(0, 5).map(m => (
-                          <span
-                            key={m}
-                            className="px-1.5 py-0.5 bg-[#005175]/10 text-[#005175] dark:text-blue-300 rounded text-[11px] font-medium"
-                          >
-                            {m}
-                          </span>
-                        ))}
-                        {view.keyMetrics.length > 5 && (
-                          <span className="text-[11px] text-gray-400 self-center">+{view.keyMetrics.length - 5} more</span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs font-semibold text-[#005175] uppercase tracking-wider">
+                Views to Build ({selectedCount} of {brief.views.length} selected)
+              </h3>
+              <button
+                onClick={() => {
+                  if (selectedCount === brief.views.length) {
+                    setSelectedViews(new Set())
+                  } else {
+                    setSelectedViews(new Set(brief.views.map(v => v.name)))
+                  }
+                }}
+                className="text-xs text-[#005175] hover:underline"
+              >
+                {selectedCount === brief.views.length ? 'Deselect all' : 'Select all'}
+              </button>
+            </div>
+            <div className="space-y-2">
+              {brief.views.map((view, i) => {
+                const isSelected = selectedViews.has(view.name)
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => toggleView(view.name)}
+                    className={`w-full flex gap-3 p-4 rounded-xl border text-left transition-all ${
+                      isSelected
+                        ? 'bg-white dark:bg-gray-800 border-[#005175]/40 dark:border-[#005175]/40'
+                        : 'bg-gray-50 dark:bg-gray-900 border-gray-100 dark:border-gray-800 opacity-50'
+                    }`}
+                  >
+                    {/* Checkbox */}
+                    <div className={`w-5 h-5 rounded flex items-center justify-center shrink-0 mt-0.5 border-2 transition-colors ${
+                      isSelected
+                        ? 'bg-[#005175] border-[#005175]'
+                        : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
+                    }`}>
+                      {isSelected && (
+                        <svg className="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
+                          <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-medium text-sm text-gray-900 dark:text-white">{view.name}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 italic">"{view.question}"</div>
+                      <div className="text-xs text-gray-600 dark:text-gray-300 mt-1">{view.purpose}</div>
+                      {view.keyMetrics.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {view.keyMetrics.slice(0, 5).map(m => (
+                            <span
+                              key={m}
+                              className="px-1.5 py-0.5 bg-[#005175]/10 text-[#005175] dark:text-blue-300 rounded text-[11px] font-medium"
+                            >
+                              {m}
+                            </span>
+                          ))}
+                          {view.keyMetrics.length > 5 && (
+                            <span className="text-[11px] text-gray-400 self-center">+{view.keyMetrics.length - 5} more</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                )
+              })}
             </div>
           </div>
         )}
@@ -137,10 +191,14 @@ export function SummaryReview({ brief, streamingText, phase, onBuild, onAdjust }
               Adjust Brief
             </button>
             <button
-              onClick={onBuild}
-              className="flex items-center gap-2 px-6 py-2.5 bg-[#005175] text-white rounded-lg text-sm font-medium hover:bg-[#003d58] transition-colors"
+              onClick={() => onBuild(Array.from(selectedViews))}
+              disabled={selectedCount === 0}
+              className="flex items-center gap-2 px-6 py-2.5 bg-[#005175] text-white rounded-lg text-sm font-medium hover:bg-[#003d58] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               Build Dashboard
+              {selectedCount > 0 && (
+                <span className="bg-white/20 rounded px-1.5 py-0.5 text-xs">{selectedCount}</span>
+              )}
             </button>
           </>
         ) : isBusy ? (
