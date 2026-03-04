@@ -17,7 +17,7 @@ export type ChatMessage = { role: 'system' | 'user' | 'assistant'; content: stri
 export async function streamChat(
   messages: ChatMessage[],
   onChunk: (delta: string, accumulated: string) => void,
-  model = 'gpt-4o'
+  model = 'gpt-4o-mini'
 ): Promise<string> {
   const client = getClient()
   const stream = await client.chat.completions.create({
@@ -43,7 +43,7 @@ export async function streamChat(
  */
 export async function chatJSON<T>(
   messages: ChatMessage[],
-  model = 'gpt-4o'
+  model = 'gpt-4o-mini'
 ): Promise<T> {
   const client = getClient()
   const response = await client.chat.completions.create({
