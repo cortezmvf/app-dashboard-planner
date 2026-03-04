@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { LayoutDashboard, Plus, ChevronDown, Download, Undo2, Redo2, Moon, Sun, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { useAppStore } from '../../store/useAppStore'
 import { resolveBgColor } from '../../lib/utils'
+import { AgentButton } from '../agent/AgentButton'
 
 export function TopBar({ onNewProject }: { onNewProject: () => void }) {
   const store = useAppStore()
@@ -162,6 +163,11 @@ export function TopBar({ onNewProject }: { onNewProject: () => void }) {
       </button>
 
       <div className="flex-1" />
+
+      {/* Agent */}
+      <AgentButton />
+
+      <div className="w-px h-5 bg-white/20 mx-1" />
 
       {/* Undo / Redo */}
       <button

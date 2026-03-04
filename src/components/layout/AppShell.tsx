@@ -8,6 +8,7 @@ import { Canvas } from '../canvas/Canvas'
 import { ChartPalette } from '../panels/ChartPalette'
 import { PropertiesPanel } from '../panels/PropertiesPanel'
 import { NewProjectDialog } from '../dialogs/NewProjectDialog'
+import { AgentModal } from '../agent/AgentModal'
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts'
 
 export function AppShell() {
@@ -108,6 +109,8 @@ export function AppShell() {
           onClose={() => setShowNewProject(false)}
         />
       )}
+
+      <AgentModal />
     </div>
   )
 }
