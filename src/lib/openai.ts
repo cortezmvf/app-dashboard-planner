@@ -1,11 +1,15 @@
 import OpenAI from 'openai'
 
 function getClient(): OpenAI {
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY
   if (!apiKey) {
-    throw new Error('VITE_OPENAI_API_KEY is not set. Add it to .env.local for development or to Cloudflare Pages environment variables for production.')
+    throw new Error('VITE_GEMINI_API_KEY is not set. Add it to .env.local for development or to Cloudflare Pages environment variables for production.')
   }
-  return new OpenAI({ apiKey, dangerouslyAllowBrowser: true })
+  return new OpenAI({
+    apiKey,
+    baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+    dangerouslyAllowBrowser: true,
+  })
 }
 
 export type ChatMessage = { role: 'system' | 'user' | 'assistant'; content: string }
@@ -17,7 +21,7 @@ export type ChatMessage = { role: 'system' | 'user' | 'assistant'; content: stri
 export async function streamChat(
   messages: ChatMessage[],
   onChunk: (delta: string, accumulated: string) => void,
-  model = 'gpt-4o-mini'
+  model = 'gemini-2.0-flash'
 ): Promise<string> {
   const client = getClient()
   const stream = await client.chat.completions.create({
@@ -43,7 +47,7 @@ export async function streamChat(
  */
 export async function chatJSON<T>(
   messages: ChatMessage[],
-  model = 'gpt-4o-mini'
+  model = 'gemini-2.0-flash'
 ): Promise<T> {
   const client = getClient()
   const response = await client.chat.completions.create({
