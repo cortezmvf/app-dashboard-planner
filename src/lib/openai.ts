@@ -1,18 +1,6 @@
-import OpenAI from 'openai'
-
-function getClient(): OpenAI {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY
-  if (!apiKey) {
-    throw new Error('VITE_GEMINI_API_KEY is not set. Add it to .env.local for development or to Cloudflare Pages environment variables for production.')
-  }
-  return new OpenAI({
-    apiKey,
-    baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
-    dangerouslyAllowBrowser: true,
-  })
-}
-
 export type ChatMessage = { role: 'system' | 'user' | 'assistant'; content: string }
+
+const CHAT_ENDPOINT = '/api/chat'
 
 /**
  * Stream a chat completion. Calls onChunk with each text delta.
@@ -23,38 +11,69 @@ export async function streamChat(
   onChunk: (delta: string, accumulated: string) => void,
   model = 'gemini-2.0-flash'
 ): Promise<string> {
-  const client = getClient()
-  const stream = await client.chat.completions.create({
-    model,
-    messages,
-    stream: true,
+  const response = await fetch(CHAT_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model, messages, stream: true }),
   })
 
+  if (!response.ok || !response.body) {
+    const text = await response.text()
+    throw new Error(`Chat API error: ${response.status} ${text}`)
+  }
+
+  const reader = response.body.getReader()
+  const decoder = new TextDecoder()
   let full = ''
-  for await (const chunk of stream) {
-    const delta = chunk.choices[0]?.delta?.content ?? ''
-    if (delta) {
-      full += delta
-      onChunk(delta, full)
+  let buffer = ''
+
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+
+    buffer += decoder.decode(value, { stream: true })
+    const lines = buffer.split('\n')
+    buffer = lines.pop() ?? ''
+
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue
+      const data = line.slice(6).trim()
+      if (data === '[DONE]') continue
+      try {
+        const parsed = JSON.parse(data)
+        const delta = parsed.choices?.[0]?.delta?.content ?? ''
+        if (delta) {
+          full += delta
+          onChunk(delta, full)
+        }
+      } catch {
+        // skip malformed SSE chunks
+      }
     }
   }
+
   return full
 }
 
 /**
- * Request a JSON object response (no streaming — used for the DataViz layout call
- * where we need the full structured output before doing anything with it).
+ * Request a JSON object response (no streaming).
  */
 export async function chatJSON<T>(
   messages: ChatMessage[],
   model = 'gemini-2.0-flash'
 ): Promise<T> {
-  const client = getClient()
-  const response = await client.chat.completions.create({
-    model,
-    messages,
-    response_format: { type: 'json_object' },
+  const response = await fetch(CHAT_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model, messages, response_format: { type: 'json_object' } }),
   })
-  const content = response.choices[0]?.message?.content ?? '{}'
+
+  if (!response.ok) {
+    const text = await response.text()
+    throw new Error(`Chat API error: ${response.status} ${text}`)
+  }
+
+  const data = await response.json() as { choices: Array<{ message: { content: string } }> }
+  const content = data.choices[0]?.message?.content ?? '{}'
   return JSON.parse(content) as T
 }
