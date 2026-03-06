@@ -9,12 +9,12 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         '/api/chat': {
-          target: 'https://generativelanguage.googleapis.com',
+          target: 'https://api.groq.com',
           changeOrigin: true,
-          rewrite: () => '/v1beta/openai/chat/completions',
+          rewrite: () => '/openai/v1/chat/completions',
           configure: (proxy) => {
             proxy.on('proxyReq', (proxyReq) => {
-              proxyReq.setHeader('Authorization', `Bearer ${env.GEMINI_API_KEY}`)
+              proxyReq.setHeader('Authorization', `Bearer ${env.GROQ_API_KEY}`)
             })
           },
         },

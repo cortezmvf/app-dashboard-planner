@@ -9,7 +9,7 @@ const CHAT_ENDPOINT = '/api/chat'
 export async function streamChat(
   messages: ChatMessage[],
   onChunk: (delta: string, accumulated: string) => void,
-  model = 'gemini-2.0-flash'
+  model = 'llama-3.3-70b-versatile'
 ): Promise<string> {
   const response = await fetch(CHAT_ENDPOINT, {
     method: 'POST',
@@ -60,7 +60,7 @@ export async function streamChat(
  */
 export async function chatJSON<T>(
   messages: ChatMessage[],
-  model = 'gemini-2.0-flash'
+  model = 'llama-3.3-70b-versatile'
 ): Promise<T> {
   const response = await fetch(CHAT_ENDPOINT, {
     method: 'POST',

@@ -1,11 +1,11 @@
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions'
+const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
 
 export async function onRequestPost(context) {
   const { request, env } = context
 
-  const apiKey = env.GEMINI_API_KEY
+  const apiKey = env.GROQ_API_KEY
   if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'GEMINI_API_KEY is not configured' }), {
+    return new Response(JSON.stringify({ error: 'GROQ_API_KEY is not configured' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     })
@@ -13,7 +13,7 @@ export async function onRequestPost(context) {
 
   const body = await request.text()
 
-  const geminiRes = await fetch(GEMINI_URL, {
+  const groqRes = await fetch(GROQ_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -22,10 +22,10 @@ export async function onRequestPost(context) {
     body,
   })
 
-  return new Response(geminiRes.body, {
-    status: geminiRes.status,
+  return new Response(groqRes.body, {
+    status: groqRes.status,
     headers: {
-      'Content-Type': geminiRes.headers.get('Content-Type') ?? 'application/json',
+      'Content-Type': groqRes.headers.get('Content-Type') ?? 'application/json',
     },
   })
 }
